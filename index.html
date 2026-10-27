@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f1">
+  <title>SustainU — Campus care, made visible</title>
+  <style>
+    :root {
+      --paper: #f5f6f1;
+      --white: #fff;
+      --ink: #202923;
+      --muted: #6f7a70;
+      --line: #e5e9e0;
+      --green: #2f684d;
+      --green-dark: #214d38;
+      --green-pale: #e9f1e9;
+      --lime: #d9edb4;
+      --amber: #f7ead0;
+      --blue: #e5eef6;
+      --shadow: 0 12px 38px rgba(31, 54, 39, .055);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { min-height: 100vh; }
+    .topbar { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 5.2%; background: var(--white); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); font-size: 19px; font-weight: 750; letter-spacing: -.6px; }
+    .brand-mark { width: 33px; height: 33px; display: grid; place-items: center; border-radius: 11px; color: white; background: var(--green); font-size: 17px; }
+    .brand span:last-child { color: var(--green); }
+    .top-right { display: flex; align-items: center; gap: 20px; }
+    .campus-label { color: var(--muted); font-size: 13px; }
+    .campus-label strong { color: var(--ink); font-weight: 650; }
+    .staff-toggle { border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: #fff; padding: 8px 13px; font-size: 12px; font-weight: 650; }
+    .staff-toggle:hover { border-color: #aabcae; }
+    .user-dot { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #e9e3d7; color: #5b584d; font-size: 12px; font-weight: 700; }
+    .layout { width: min(1160px, calc(100% - 48px)); margin: 31px auto 60px; display: grid; grid-template-columns: 218px minmax(0, 1fr); gap: 39px; }
+    .sidebar { padding-top: 8px; }
+    .side-caption { margin: 0 0 12px 12px; color: #97a097; font-size: 10px; font-weight: 750; letter-spacing: 1.2px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-radius: 9px; padding: 11px 12px; text-align: left; background: transparent; color: #68746a; font-size: 13px; font-weight: 580; }
+    .nav-item:hover, .nav-item.active { background: #e8ede5; color: var(--green-dark); }
+    .nav-icon { width: 17px; text-align: center; font-size: 16px; }
+    .nav-count { margin-left: auto; color: #788477; font-size: 11px; }
+    .new-tag { margin-left: auto; border-radius: 999px; padding: 3px 6px; color: #53724f; background: #edf3e6; font-size: 9px; font-weight: 700; }
+    .sidebar-note { margin-top: 37px; padding: 17px 15px; border-radius: 12px; background: #e9eee4; }
+    .note-sun { font-size: 17px; }
+    .sidebar-note p { margin: 9px 0 0; color: #526353; font-size: 12px; line-height: 1.6; }
+    .sidebar-note strong { color: #314b37; }
+    main { min-width: 0; }
+    .welcome-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 11px; font-weight: 760; letter-spacing: 1.45px; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(25px, 3vw, 32px); letter-spacing: -1.15px; line-height: 1.14; font-weight: 680; }
+    .subhead { margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .primary-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border: 0; border-radius: 8px; padding: 0 16px; background: var(--green); color: #fff; font-size: 12px; font-weight: 680; box-shadow: 0 4px 10px rgba(47,104,77,.14); }
+    .primary-btn:hover { background: var(--green-dark); }
+    .primary-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #a4caa9; outline-offset: 2px; }
+    .impact-banner { min-height: 132px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; position: relative; padding: 23px 28px; border-radius: 12px; color: white; background: #2b5c43; }
+    .impact-copy { position: relative; z-index: 1; max-width: 440px; }
+    .impact-copy .eyebrow { margin-bottom: 8px; color: #c5ddc8; }
+    .impact-copy h2 { margin: 0; max-width: 380px; font-size: 21px; letter-spacing: -.5px; font-weight: 610; line-height: 1.3; }
+    .impact-copy p { margin: 8px 0 0; color: #d2e0d3; font-size: 12px; }
+    .impact-visual { width: 140px; height: 125px; position: absolute; right: 23px; bottom: -18px; opacity: .96; }
+    .sun { position: absolute; right: 15px; top: -5px; width: 73px; height: 73px; border-radius: 50%; background: #d5e8a9; }
+    .hill { position: absolute; bottom: 0; border-radius: 60% 60% 0 0; transform: rotate(-8deg); }
+    .hill.back { width: 150px; height: 70px; left: 4px; background: #648c61; }
+    .hill.front { width: 155px; height: 54px; left: 25px; bottom: -6px; background: #97b779; transform: rotate(7deg); }
+    .plant { position: absolute; right: 47px; bottom: 15px; color: #315c45; font-size: 35px; transform: rotate(-12deg); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin: 17px 0 24px; }
+    .stat-card { min-height: 85px; padding: 15px 17px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 11px; }
+    .stat-icon { font-size: 14px; }
+    .stat-number { display: block; margin-top: 7px; font-size: 23px; line-height: 1; font-weight: 680; letter-spacing: -.5px; }
+    .stat-foot { margin-left: 5px; color: #829084; font-size: 10px; font-weight: 500; letter-spacing: 0; }
+    .content-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 13px; }
+    .content-heading h2 { margin: 0; font-size: 16px; font-weight: 680; letter-spacing: -.2px; }
+    .view-link { padding: 4px 0; border: 0; background: transparent; color: var(--green); font-size: 11px; font-weight: 680; }
+    .filters { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .filter { white-space: nowrap; border: 1px solid transparent; border-radius: 999px; padding: 7px 11px; color: #788278; background: transparent; font-size: 10px; font-weight: 620; }
+    .filter.active { border-color: #dce6d9; background: #e9f0e7; color: var(--green-dark); }
+    .reports { display: grid; gap: 9px; }
+    .report-card { display: grid; grid-template-columns: 39px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+    .report-symbol { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; background: #eff2eb; font-size: 17px; }
+    .report-main { min-width: 0; }
+    .report-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+    .report-title { font-size: 12px; font-weight: 700; }
+    .category-tag { border-radius: 999px; padding: 3px 7px; color: #637360; background: #f0f2ec; font-size: 9px; font-weight: 630; }
+    .report-desc { margin: 5px 0 8px; color: #707b71; font-size: 11px; line-height: 1.5; }
+    .report-meta { display: flex; flex-wrap: wrap; gap: 12px; color: #929b92; font-size: 9px; }
+    .report-side { display: grid; justify-items: end; gap: 10px; }
+    .status { border-radius: 999px; padding: 5px 8px; white-space: nowrap; font-size: 9px; font-weight: 680; }
+    .status.new { color: #8a6121; background: var(--amber); }
+    .status.progress { color: #45627b; background: var(--blue); }
+    .status.resolved { color: #3c694b; background: var(--green-pale); }
+    .resolve-btn { border: 1px solid #dce8dc; border-radius: 6px; padding: 5px 7px; background: white; color: var(--green); font-size: 9px; font-weight: 650; }
+    .coupon-chip { color: #567044; font-size: 9px; font-weight: 650; white-space: nowrap; }
+    .empty-state { padding: 30px 15px; border: 1px dashed #d8dfd5; border-radius: 10px; color: var(--muted); text-align: center; font-size: 12px; }
+    .bottom-note { margin: 16px 0 0; color: #939c92; text-align: center; font-size: 10px; }
+    .community-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(235px, .85fr); gap: 14px; margin-top: 28px; }
+    .panel { border: 1px solid var(--line); border-radius: 11px; background: #fff; overflow: hidden; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px 16px; border-bottom: 1px solid #edf0eb; }
+    .panel-head h2 { margin: 0; font-size: 14px; letter-spacing: -.2px; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+    .small-btn { border: 1px solid #dce7dc; border-radius: 7px; padding: 7px 9px; background: #fff; color: var(--green); font-size: 10px; font-weight: 680; white-space: nowrap; }
+    .small-btn:hover { background: #f3f7f1; }
+    .market-list { display: grid; gap: 0; }
+    .market-item { display: grid; grid-template-columns: 39px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f0f2ee; }
+    .market-item:last-child { border-bottom: 0; }
+    .market-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 9px; background: #f1f0e9; font-size: 18px; }
+    .market-name { color: var(--ink); font-size: 11px; font-weight: 700; }
+    .market-meta { display: block; margin-top: 4px; color: #8a948a; font-size: 9px; }
+    .market-price { color: var(--green-dark); text-align: right; font-size: 11px; font-weight: 720; }
+    .interest-btn { display: block; margin: 5px 0 0 auto; border: 0; padding: 2px 0; background: transparent; color: var(--green); font-size: 9px; font-weight: 680; }
+    .interest-btn:disabled { color: #879487; cursor: default; }
+    .market-empty { padding: 20px 14px; color: var(--muted); text-align: center; font-size: 10px; }
+    .leaderboard { padding: 5px 15px 9px; }
+    .leader-row { display: grid; grid-template-columns: 22px 28px minmax(0,1fr) auto; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f2ee; }
+    .leader-row:last-child { border: 0; }
+    .rank { color: #919b91; font-size: 10px; font-weight: 700; }
+    .avatar { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; background: #e9eee3; color: #53694d; font-size: 9px; font-weight: 750; }
+    .avatar.you { background: #dcebd8; color: #2c6746; }
+    .leader-name { font-size: 10px; font-weight: 690; }
+    .leader-caption { display: block; margin-top: 3px; color: #929a92; font-size: 8px; }
+    .leader-points { color: var(--green); font-size: 10px; font-weight: 730; text-align: right; }
+    .weekly-reward { margin: 0 13px 13px; padding: 10px 11px; border-radius: 8px; background: #f1f4e8; color: #607052; font-size: 9px; line-height: 1.5; }
+    .weekly-reward strong { color: #40583e; }
+    .week-reset { color: #929a92; font-size: 9px; white-space: nowrap; }
+    .map-panel { margin-top: 25px; }
+    .map-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(205px, .75fr); }
+    .campus-map { width: 100%; display: block; background: #edf1e8; }
+    .map-building { cursor: pointer; }
+    .map-building rect { fill: #fffdf8; stroke: #9fac96; stroke-width: 2; transition: fill .15s, stroke .15s; }
+    .map-building:hover rect, .map-building:focus rect { fill: #e4efdc; stroke: #477452; stroke-width: 3; outline: none; }
+    .map-building.selected rect { fill: #dcebd8; stroke: #2f684d; stroke-width: 4; }
+    .map-building text { pointer-events: none; fill: #314436; font: 700 13px system-ui, sans-serif; text-anchor: middle; }
+    .map-building .map-small-label { fill: #647266; font-size: 10px; font-weight: 500; }
+    .map-side { padding: 18px 16px; border-left: 1px solid #edf0eb; }
+    .map-side-label { margin: 0 0 8px; color: #859184; font-size: 9px; font-weight: 750; letter-spacing: 1px; text-transform: uppercase; }
+    .map-side h3 { margin: 0; font-size: 16px; letter-spacing: -.3px; }
+    .map-side p { margin: 8px 0 14px; color: #748075; font-size: 10px; line-height: 1.55; }
+    .map-places { margin: 0 0 16px; padding: 0; list-style: none; color: #59665b; font-size: 10px; line-height: 1.9; }
+    .map-places li::before { content: "•"; margin-right: 7px; color: var(--green); }
+    .map-caption { padding: 8px 12px; border-top: 1px solid #edf0eb; color: #879187; font-size: 9px; }
+    .map-route { fill: none; stroke: #fff; stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; }
+    .map-walk { fill: none; stroke: #d0d9c9; stroke-width: 2; stroke-dasharray: 5 6; }
+    dialog { width: min(490px, calc(100% - 28px)); max-height: calc(100% - 28px); padding: 0; border: 0; border-radius: 14px; box-shadow: 0 25px 80px rgba(20,40,27,.25); }
+    dialog::backdrop { background: rgba(22,37,27,.48); backdrop-filter: blur(2px); }
+    .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 21px 22px 15px; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-size: 18px; letter-spacing: -.4px; }
+    .dialog-head p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .close-btn { width: 29px; height: 29px; border: 0; border-radius: 50%; background: #f1f3ee; color: #647064; font-size: 17px; }
+    form { padding: 18px 22px 21px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 6px; color: #4b574d; font-size: 11px; font-weight: 680; }
+    input, select, textarea { width: 100%; min-height: 39px; padding: 9px 10px; border: 1px solid #dfe5dc; border-radius: 7px; outline: none; background: white; color: var(--ink); font-size: 12px; }
+    textarea { min-height: 82px; resize: vertical; }
+    .hint { margin: 6px 0 0; color: #8b958b; font-size: 9px; line-height: 1.45; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 17px; }
+    .secondary-btn { min-height: 39px; padding: 0 13px; border: 1px solid var(--line); border-radius: 7px; background: white; color: #637064; font-size: 11px; font-weight: 650; }
+    .toast { position: fixed; z-index: 5; right: 22px; bottom: 22px; max-width: min(360px, calc(100% - 44px)); padding: 12px 16px; border-radius: 9px; color: white; background: #274f39; box-shadow: var(--shadow); font-size: 12px; transform: translateY(12px); opacity: 0; pointer-events: none; transition: .2s ease; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    @media (max-width: 760px) {
+      .topbar { height: 62px; padding: 0 18px; }
+      .campus-label { display: none; }
+      .top-right { gap: 10px; }
+      .layout { width: min(100% - 32px, 620px); grid-template-columns: 1fr; gap: 17px; margin-top: 21px; }
+      .sidebar { padding: 0; }
+      .side-caption, .sidebar-note { display: none; }
+      .nav-list { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 3px; }
+      .nav-item { justify-content: center; width: auto; min-width: max-content; padding: 9px 11px; font-size: 11px; }
+      .nav-icon { display: none; }
+      .welcome-row { align-items: flex-start; margin-bottom: 18px; }
+      .impact-banner { min-height: 125px; padding: 19px; }
+      .impact-visual { right: -22px; opacity: .55; }
+      .community-grid { grid-template-columns: 1fr; }
+      .map-layout { grid-template-columns: 1fr; }
+      .map-side { border-left: 0; border-top: 1px solid #edf0eb; }
+    }
+    @media (max-width: 500px) {
+      .layout { width: calc(100% - 26px); }
+      .welcome-row { display: block; }
+      .welcome-row .primary-btn { margin-top: 15px; width: 100%; }
+      .stats { gap: 7px; margin: 12px 0 20px; }
+      .stat-card { padding: 12px 9px; min-height: 80px; }
+      .stat-top { font-size: 9px; }
+      .stat-number { font-size: 20px; }
+      .stat-foot { display: block; margin: 4px 0 0; font-size: 9px; }
+      .report-card { grid-template-columns: 33px minmax(0,1fr); gap: 9px; padding: 12px; }
+      .report-symbol { width: 32px; height: 32px; }
+      .report-side { grid-column: 2; display: flex; justify-content: space-between; align-items: center; }
+      .report-meta { gap: 8px; }
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .dialog-head, form { padding-left: 17px; padding-right: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="SustainU home"><span class="brand-mark">S</span><span>Sustain<span>U</span></span></a>
+      <div class="top-right">
+        <div class="campus-label">Your community · <strong>Northfield Campus</strong></div>
+        <button class="staff-toggle" id="staffToggle" type="button" aria-pressed="false">Switch to staff view</button>
+        <div class="user-dot" aria-label="Signed in as Alex">AL</div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Main navigation">
+        <p class="side-caption">Workspace</p>
+        <nav class="nav-list">
+          <button class="nav-item active" type="button"><span class="nav-icon">⌂</span>Overview</button>
+          <button class="nav-item" id="navReports" type="button"><span class="nav-icon">▤</span>Campus reports <span class="nav-count" id="navCount">3</span></button>
+          <button class="nav-item" id="navRewards" type="button"><span class="nav-icon">✳</span>My rewards</button>
+          <button class="nav-item" id="navExchange" type="button"><span class="nav-icon">↔</span>Campus exchange <span class="new-tag">NEW</span></button>
+          <button class="nav-item" id="navLeaderboard" type="button"><span class="nav-icon">♛</span>Leaderboard</button>
+          <button class="nav-item" id="navMap" type="button"><span class="nav-icon">⌖</span>Campus map</button>
+        </nav>
+        <div class="sidebar-note"><span class="note-sun">☀</span><p><strong>Good things grow here.</strong><br>One small report can save resources across campus.</p></div>
+      </aside>
+
+      <main>
+        <section class="welcome-row" aria-labelledby="pageTitle">
+          <div><p class="eyebrow" id="greeting">TUESDAY, 28 OCTOBER</p><h1 id="pageTitle">A greener campus<br>starts with us.</h1><p class="subhead" id="introText">Notice something that needs care? Let the right people know.</p></div>
+          <button class="primary-btn" id="openReport" type="button"><span aria-hidden="true">＋</span> Report an issue</button>
+        </section>
+
+        <section class="impact-banner" aria-label="Community impact">
+          <div class="impact-copy"><p class="eyebrow">OUR CAMPUS, TOGETHER</p><h2>Little fixes add up to a lighter footprint.</h2><p>Every useful report brings us one step closer.</p></div>
+          <div class="impact-visual" aria-hidden="true"><div class="sun"></div><div class="hill back"></div><div class="hill front"></div><div class="plant">♣</div></div>
+        </section>
+
+        <section class="stats" aria-label="Campus report totals">
+          <div class="stat-card"><div class="stat-top"><span>Reports this month</span><span class="stat-icon">◷</span></div><strong class="stat-number" id="totalStat">24 <span class="stat-foot">from our community</span></strong></div>
+          <div class="stat-card"><div class="stat-top"><span>Resolved</span><span class="stat-icon">✓</span></div><strong class="stat-number" id="resolvedStat">18 <span class="stat-foot">issues taken care of</span></strong></div>
+          <div class="stat-card"><div class="stat-top"><span>Resources saved</span><span class="stat-icon">✳</span></div><strong class="stat-number" id="savedStat">1.2k <span class="stat-foot">litres of water est.</span></strong></div>
+        </section>
+
+        <section aria-labelledby="reportsHeading">
+          <div class="content-heading"><h2 id="reportsHeading">Around campus</h2><button class="view-link" id="viewAll" type="button">View all reports ↗</button></div>
+          <div class="filters" role="group" aria-label="Filter reports">
+            <button class="filter active" data-filter="All" type="button">All reports</button>
+            <button class="filter" data-filter="Water" type="button">Water</button>
+            <button class="filter" data-filter="Energy" type="button">Energy</button>
+            <button class="filter" data-filter="Waste" type="button">Waste</button>
+            <button class="filter" data-filter="Other" type="button">Other</button>
+          </div>
+          <div class="reports" id="reportsList" aria-live="polite"></div>
+          <p class="bottom-note">Reports are visible to the campus community. Please don’t include personal or sensitive information.</p>
+        </section>
+
+        <section class="panel map-panel" id="mapPanel" aria-labelledby="mapHeading">
+          <div class="panel-head"><div><h2 id="mapHeading">Explore Northfield Campus</h2><p>Choose a building to see what’s inside or start a location-specific report.</p></div></div>
+          <div class="map-layout">
+            <div>
+              <svg class="campus-map" viewBox="0 0 800 460" role="group" aria-label="Illustrated campus map. Select a building to view details.">
+                <rect width="800" height="460" fill="#edf1e8"/>
+                <path d="M0 218 C130 185 160 233 270 211 S450 205 560 225 S700 214 800 185" class="map-route"/>
+                <path d="M270 0 C290 105 284 185 330 220 S385 340 380 460" class="map-route"/>
+                <path d="M0 218 C130 185 160 233 270 211 S450 205 560 225 S700 214 800 185" class="map-walk"/>
+                <path d="M270 0 C290 105 284 185 330 220 S385 340 380 460" class="map-walk"/>
+                <path d="M517 0 C497 95 508 155 560 225 S605 352 620 460" class="map-walk"/>
+                <ellipse cx="520" cy="112" rx="32" ry="19" fill="#cbdcbd"/><ellipse cx="70" cy="365" rx="38" ry="23" fill="#cbdcbd"/><ellipse cx="710" cy="95" rx="43" ry="24" fill="#cbdcbd"/>
+                <text x="60" y="392" fill="#879685" font-size="10" font-family="system-ui">GREEN COURT</text>
+                <text x="648" y="73" fill="#879685" font-size="10" font-family="system-ui">NORTH GARDEN</text>
+                <g class="map-building selected" data-building="Library" role="button" tabindex="0" aria-label="Library. Select for details."><rect x="65" y="92" width="155" height="91" rx="10"/><text x="142" y="132">Library</text><text class="map-small-label" x="142" y="153">Study · print · help desk</text></g>
+                <g class="map-building" data-building="Science Block" role="button" tabindex="0" aria-label="Science Block. Select for details."><rect x="327" y="53" width="166" height="102" rx="10"/><text x="410" y="97">Science Block</text><text class="map-small-label" x="410" y="119">Labs · teaching rooms</text></g>
+                <g class="map-building" data-building="Student Centre" role="button" tabindex="0" aria-label="Student Centre. Select for details."><rect x="562" y="155" width="175" height="100" rx="10"/><text x="649" y="199">Student Centre</text><text class="map-small-label" x="649" y="221">Clubs · services · courtyard</text></g>
+                <g class="map-building" data-building="Arts Hall" role="button" tabindex="0" aria-label="Arts Hall. Select for details."><rect x="82" y="270" width="152" height="82" rx="10"/><text x="158" y="305">Arts Hall</text><text class="map-small-label" x="158" y="326">Studios · lecture rooms</text></g>
+                <g class="map-building" data-building="Dining Commons" role="button" tabindex="0" aria-label="Dining Commons. Select for details."><rect x="309" y="290" width="172" height="86" rx="10"/><text x="395" y="327">Dining Commons</text><text class="map-small-label" x="395" y="348">Café · dining · refill station</text></g>
+                <g class="map-building" data-building="Sports Ground" role="button" tabindex="0" aria-label="Sports Ground. Select for details."><rect x="571" y="318" width="169" height="83" rx="10"/><text x="655" y="353">Sports Ground</text><text class="map-small-label" x="655" y="374">Gym · field · changing rooms</text></g>
+                <text x="14" y="24" fill="#798779" font-size="10" font-family="system-ui" font-weight="700">N ↑</text>
+              </svg>
+            </div>
+            <div class="map-side" aria-live="polite">
+              <p class="map-side-label">Selected building</p>
+              <h3 id="mapBuildingName">Library</h3>
+              <p id="mapBuildingDescription">A good place to study, print work, or ask for help.</p>
+              <ul class="map-places" id="mapBuildingPlaces"><li>Ground floor · help desk</li><li>East entrance · water fountain</li><li>Quiet study · upper floors</li></ul>
+              <button class="small-btn" id="reportAtBuilding" type="button">＋ Report here</button>
+            </div>
+          </div>
+          <div class="map-caption">Illustrative campus layout for the prototype. Paths and building positions are not to scale.</div>
+        </section>
+
+        <section class="community-grid" aria-label="Campus exchange and weekly leaderboard">
+          <div class="panel" id="exchangePanel">
+            <div class="panel-head"><div><h2>Campus exchange</h2><p>Give good things another go-round.</p></div><button class="small-btn" id="openListing" type="button">＋ List an item</button></div>
+            <div class="market-list" id="marketList" aria-live="polite"></div>
+          </div>
+          <div class="panel" id="leaderboardPanel">
+            <div class="panel-head"><div><h2>Good deeds this week</h2><p>Demo board · points reset every Monday</p></div><span class="week-reset" id="weekReset"></span></div>
+            <div class="leaderboard" id="leaderboardList" aria-live="polite"></div>
+            <div class="weekly-reward"><strong>Weekly goodies:</strong> top 3 community helpers earn a campus café treat and a SustainU shout-out. Final rewards are confirmed by the campus team.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="reportDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-head"><div><h2 id="dialogTitle">Report a campus issue</h2><p>Share enough detail to help the facilities team find it.</p></div><button class="close-btn" id="closeDialog" type="button" aria-label="Close">×</button></div>
+    <form id="reportForm">
+      <div class="field"><label for="issueTitle">What did you notice?</label><input id="issueTitle" name="title" maxlength="65" required placeholder="e.g. Tap keeps dripping"></div>
+      <div class="form-row">
+        <div class="field"><label for="category">Issue type</label><select id="category" name="category" required><option value="Water">Water</option><option value="Energy">Energy</option><option value="Waste">Waste</option><option value="Other">Other</option></select></div>
+        <div class="field"><label for="building">Building</label><select id="building" name="building" required><option>Library</option><option>Science Block</option><option>Student Centre</option><option>Arts Hall</option><option>Dining Commons</option><option>Sports Ground</option><option>Other / outside</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="room">Room, floor, or nearest room</label><input id="room" name="room" maxlength="55" required placeholder="e.g. Room 204 or Ground floor"></div>
+        <div class="field"><label for="nearby">Nearby landmark <span style="font-weight:400;color:#8b958b">(optional)</span></label><input id="nearby" name="nearby" maxlength="55" placeholder="e.g. East entrance or beside lift"></div>
+      </div>
+      <div class="field"><label for="details">A little more detail <span style="font-weight:400;color:#8b958b">(optional)</span></label><textarea id="details" name="details" maxlength="240" placeholder="What would help someone locate or understand it?"></textarea><p class="hint">Please avoid names, phone numbers, or other private information.</p></div>
+      <div class="form-actions"><button class="secondary-btn" id="cancelDialog" type="button">Cancel</button><button class="primary-btn" type="submit">Send report <span aria-hidden="true">→</span></button></div>
+    </form>
+  </dialog>
+  <dialog id="listingDialog" aria-labelledby="listingDialogTitle">
+    <div class="dialog-head"><div><h2 id="listingDialogTitle">List something to pass on</h2><p>Books, supplies, clothes and small useful things welcome.</p></div><button class="close-btn" id="closeListing" type="button" aria-label="Close">×</button></div>
+    <form id="listingForm">
+      <div class="field"><label for="itemTitle">Item name</label><input id="itemTitle" name="title" maxlength="55" required placeholder="e.g. Intro to Biology textbook"></div>
+      <div class="form-row">
+        <div class="field"><label for="itemCategory">Category</label><select id="itemCategory" name="category"><option>Books</option><option>Clothing</option><option>Supplies</option><option>Electronics</option><option>Other</option></select></div>
+        <div class="field"><label for="itemPrice">Price</label><input id="itemPrice" name="price" maxlength="20" required placeholder="Free or ₹250"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="itemCondition">Condition</label><select id="itemCondition" name="condition"><option>Good condition</option><option>Like new</option><option>Well used</option></select></div>
+        <div class="field"><label for="itemMeetup">Meet-up spot</label><input id="itemMeetup" name="meetup" maxlength="45" required placeholder="Public campus location"></div>
+      </div>
+      <div class="field"><label for="itemDetails">Short description <span style="font-weight:400;color:#8b958b">(optional)</span></label><textarea id="itemDetails" name="details" maxlength="150" placeholder="Add useful details about the item."></textarea><p class="hint">Keep exchanges on campus and meet in a public place. Don’t post phone numbers or private information.</p></div>
+      <div class="form-actions"><button class="secondary-btn" id="cancelListing" type="button">Cancel</button><button class="primary-btn" type="submit">Post listing <span aria-hidden="true">→</span></button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Demo reports. New reports and changes are saved only in this browser.
+    const starterReports = [
+      { id: 1, title: "Water fountain running", category: "Water", location: "Library · Ground floor", detail: "The fountain near the east entrance won’t switch off.", reporter: "Maya R.", time: "Today · 9:42 am", status: "New", reward: false },
+      { id: 2, title: "Lights on in empty classroom", category: "Energy", location: "Science Block · Room 204", detail: "Lights have been on since yesterday evening.", reporter: "Jordan K.", time: "Today · 8:15 am", status: "In progress", reward: false },
+      { id: 3, title: "Recycling bin overflowing", category: "Waste", location: "Student Centre · Courtyard", detail: "Bottles are spilling out beside the west doors.", reporter: "Sam T.", time: "Yesterday · 4:30 pm", status: "Resolved", reward: false }
+    ];
+    const icons = { Water: "◉", Energy: "ϟ", Waste: "♲", Other: "＋" };
+    const itemIcons = { Books: "▤", Clothing: "♧", Supplies: "✎", Electronics: "⌁", Other: "↗" };
+    const campusBuildings = {
+      "Library": { description: "A good place to study, print work, or ask for help.", places: ["Ground floor · help desk", "East entrance · water fountain", "Quiet study · upper floors"] },
+      "Science Block": { description: "Teaching rooms and labs for science courses.", places: ["Rooms 101–310 · teaching rooms", "Lab wing · east corridor", "Main stairwell · central entrance"] },
+      "Student Centre": { description: "Campus services, clubs, and student gathering spaces.", places: ["Courtyard · west doors", "Ground floor · student services", "Room 12 · club office"] },
+      "Arts Hall": { description: "Studios, lecture rooms, and spaces for creative work.", places: ["Studio 1 · ground floor", "Lecture rooms · upper floor", "South entrance · noticeboard"] },
+      "Dining Commons": { description: "Dining and refill spots near the centre of campus.", places: ["Café · ground floor", "Water refill station · north wall", "Dining room · east side"] },
+      "Sports Ground": { description: "Sports facilities, the field, and changing rooms.", places: ["Gym entrance · west side", "Changing rooms · ground floor", "Field gate · south path"] }
+    };
+    let selectedBuilding = "Library";
+    const starterListings = [
+      { id: "book-1", title: "First-year biology textbook", category: "Books", price: "₹250", condition: "Good condition", meetup: "Library entrance", details: "A few notes in the margins.", seller: "Priya S.", interested: false },
+      { id: "bag-1", title: "Canvas tote bag", category: "Clothing", price: "Free", condition: "Like new", meetup: "Student Centre", details: "Clean and ready for a new home.", seller: "Dev A.", interested: false },
+      { id: "calc-1", title: "Scientific calculator", category: "Supplies", price: "₹300", condition: "Well used", meetup: "Science Block lobby", details: "Works well; battery included.", seller: "Riya M.", interested: false }
+    ];
+    let reports = loadReports();
+    let listings = loadListings();
+    let activeFilter = "All";
+    let staffMode = false;
+
+    function loadReports() {
+      try {
+        const saved = localStorage.getItem("sustainu-reports");
+        return saved ? JSON.parse(saved) : starterReports.slice();
+      } catch (error) { return starterReports.slice(); }
+    }
+    function saveReports() {
+      try { localStorage.setItem("sustainu-reports", JSON.stringify(reports)); }
+      catch (error) { showToast("Couldn’t save in this browser. You can still view this demo."); }
+    }
+    function loadListings() {
+      try {
+        const saved = localStorage.getItem("sustainu-listings");
+        return saved ? JSON.parse(saved) : starterListings.slice();
+      } catch (error) { return starterListings.slice(); }
+    }
+    function saveListings() {
+      try { localStorage.setItem("sustainu-listings", JSON.stringify(listings)); }
+      catch (error) { showToast("Couldn’t save in this browser. You can still view the demo listings."); }
+    }
+    function escapeText(value) {
+      return String(value).replace(/[&<>"']/g, function (character) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character];
+      });
+    }
+    function statusClass(status) {
+      if (status === "Resolved") return "resolved";
+      if (status === "In progress") return "progress";
+      return "new";
+    }
+    function renderReports() {
+      const list = document.getElementById("reportsList");
+      const visibleReports = reports.filter(report => activeFilter === "All" || report.category === activeFilter);
+      document.getElementById("navCount").textContent = reports.length;
+      if (visibleReports.length === 0) {
+        list.innerHTML = '<div class="empty-state">No reports in this category yet. If you spot something, let us know.</div>';
+        return;
+      }
+      list.innerHTML = visibleReports.map(report => {
+        const safeTitle = escapeText(report.title);
+        const safeLocation = escapeText(report.location);
+        const safeDetail = escapeText(report.detail || "");
+        const safeReporter = escapeText(report.reporter || "Campus member");
+        const canResolve = staffMode && report.status !== "Resolved";
+        let action = "";
+        if (canResolve) {
+          action = '<button class="resolve-btn" type="button" data-resolve="' + report.id + '">' + (report.status === "New" ? "Start work" : "Mark resolved") + '</button>';
+        } else if (report.reward) {
+          action = '<span class="coupon-chip" title="Reward issued after staff verification">✓ Coupon earned</span>';
+        }
+        return '<article class="report-card">' +
+          '<div class="report-symbol" aria-hidden="true">' + icons[report.category] + '</div>' +
+          '<div class="report-main"><div class="report-title-row"><span class="report-title">' + safeTitle + '</span><span class="category-tag">' + escapeText(report.category) + '</span></div>' +
+          (safeDetail ? '<p class="report-desc">' + safeDetail + '</p>' : '') +
+          '<div class="report-meta"><span>⌖ ' + safeLocation + '</span><span>◷ ' + escapeText(report.time) + '</span><span>By ' + safeReporter + '</span></div></div>' +
+          '<div class="report-side"><span class="status ' + statusClass(report.status) + '">' + escapeText(report.status) + '</span>' + action + '</div>' +
+          '</article>';
+      }).join("");
+      list.querySelectorAll("[data-resolve]").forEach(button => {
+        button.addEventListener("click", () => resolveReport(Number(button.dataset.resolve)));
+      });
+    }
+    function updateStats() {
+      const resolved = reports.filter(report => report.status === "Resolved").length;
+      document.getElementById("totalStat").innerHTML = (24 + reports.length - starterReports.length) + ' <span class="stat-foot">from our community</span>';
+      document.getElementById("resolvedStat").innerHTML = (18 + resolved - 1) + ' <span class="stat-foot">issues taken care of</span>';
+      document.getElementById("savedStat").innerHTML = (1200 + Math.max(0, resolved - 1) * 40).toLocaleString() + ' <span class="stat-foot">litres of water est.</span>';
+    }
+    function weekStart(date) {
+      const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+      return monday;
+    }
+    function weekKey(date) {
+      const day = weekStart(date);
+      return day.getFullYear() + "-" + String(day.getMonth() + 1).padStart(2, "0") + "-" + String(day.getDate()).padStart(2, "0");
+    }
+    function getMyPoints() {
+      const currentWeek = weekKey(new Date());
+      try {
+        const saved = JSON.parse(localStorage.getItem("sustainu-weekly-points") || "null");
+        return saved && saved.week === currentWeek ? saved.points : 0;
+      } catch (error) { return 0; }
+    }
+    function addPoints(points) {
+      const nextTotal = getMyPoints() + points;
+      try { localStorage.setItem("sustainu-weekly-points", JSON.stringify({ week: weekKey(new Date()), points: nextTotal })); }
+      catch (error) { showToast("Couldn’t save your weekly points in this browser."); }
+      renderLeaderboard();
+    }
+    function renderLeaderboard() {
+      const people = [
+        { name: "Aarav P.", initials: "AP", points: 46, note: "Student · 4 good deeds", you: false },
+        { name: "Leena D.", initials: "LD", points: 34, note: "Staff · 3 good deeds", you: false },
+        { name: "You", initials: "AL", points: getMyPoints(), note: "Your points this week", you: true },
+        { name: "Kabir N.", initials: "KN", points: 29, note: "Student · 2 good deeds", you: false }
+      ].sort((a, b) => b.points - a.points);
+      document.getElementById("leaderboardList").innerHTML = people.map((person, index) =>
+        '<div class="leader-row"><span class="rank">' + (index + 1) + '</span><span class="avatar ' + (person.you ? "you" : "") + '">' + person.initials + '</span><span class="leader-name">' + person.name + (person.you ? '<span class="leader-caption">' + person.note + '</span>' : '<span class="leader-caption">' + person.note + '</span>') + '</span><span class="leader-points">' + person.points + ' pts' + (index < 3 ? '<span class="leader-caption">' + (index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉") + ' weekly prize</span>' : "") + '</span></div>'
+      ).join("");
+      const now = new Date();
+      const nextMonday = weekStart(now);
+      nextMonday.setDate(nextMonday.getDate() + 7);
+      const daysLeft = Math.ceil((nextMonday - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+      document.getElementById("weekReset").textContent = "Resets in " + daysLeft + "d";
+    }
+    function renderListings() {
+      const list = document.getElementById("marketList");
+      if (!listings.length) {
+        list.innerHTML = '<div class="market-empty">No items listed yet. Be the first to pass something on.</div>';
+        return;
+      }
+      list.innerHTML = listings.map(item => {
+        const safeTitle = escapeText(item.title);
+        const safeCategory = escapeText(item.category);
+        const safeMeetup = escapeText(item.meetup);
+        const safeCondition = escapeText(item.condition);
+        const safeSeller = escapeText(item.seller);
+        const price = escapeText(item.price);
+        return '<article class="market-item"><div class="market-icon" aria-hidden="true">' + (itemIcons[item.category] || "↗") + '</div><div><span class="market-name">' + safeTitle + '</span><span class="market-meta">' + safeCategory + ' · ' + safeCondition + ' · ' + safeMeetup + ' · ' + safeSeller + '</span></div><div><div class="market-price">' + price + '</div><button class="interest-btn" type="button" data-interest="' + escapeText(item.id) + '" ' + (item.interested ? "disabled" : "") + '>' + (item.interested ? "Interest sent ✓" : "I’m interested") + '</button></div></article>';
+      }).join("");
+      list.querySelectorAll("[data-interest]").forEach(button => button.addEventListener("click", () => {
+        const item = listings.find(entry => String(entry.id) === button.dataset.interest);
+        if (!item || item.interested) return;
+        item.interested = true;
+        saveListings(); renderListings();
+        showToast("Interest noted. Arrange a safe public campus meet-up with the seller.");
+      }));
+    }
+    function resolveReport(id) {
+      const report = reports.find(item => item.id === id);
+      if (!report) return;
+      if (report.status === "New") {
+        report.status = "In progress";
+        saveReports(); renderReports();
+        showToast("Work started. Mark it resolved after the fix is confirmed.");
+        return;
+      }
+      report.status = "Resolved";
+      report.reward = true;
+      saveReports(); renderReports(); updateStats();
+      showToast("Issue resolved. A campus discount coupon was added for the reporter.");
+    }
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+    function openDialog(building) {
+      if (building && campusBuildings[building]) {
+        document.getElementById("building").value = building;
+        document.getElementById("room").value = "";
+        document.getElementById("nearby").value = "";
+      }
+      document.getElementById("reportDialog").showModal();
+      document.getElementById("issueTitle").focus();
+    }
+    function selectBuilding(building) {
+      if (!campusBuildings[building]) return;
+      selectedBuilding = building;
+      document.querySelectorAll(".map-building").forEach(item => {
+        const selected = item.dataset.building === building;
+        item.classList.toggle("selected", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+      document.getElementById("mapBuildingName").textContent = building;
+      document.getElementById("mapBuildingDescription").textContent = campusBuildings[building].description;
+      document.getElementById("mapBuildingPlaces").innerHTML = campusBuildings[building].places.map(place => "<li>" + escapeText(place) + "</li>").join("");
+    }
+
+    document.getElementById("openReport").addEventListener("click", () => openDialog());
+    document.getElementById("closeDialog").addEventListener("click", () => document.getElementById("reportDialog").close());
+    document.getElementById("cancelDialog").addEventListener("click", () => document.getElementById("reportDialog").close());
+    document.getElementById("reportDialog").addEventListener("click", event => {
+      if (event.target === event.currentTarget) event.currentTarget.close();
+    });
+    document.getElementById("reportForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const title = String(form.get("title")).trim();
+      const building = String(form.get("building")).trim();
+      const room = String(form.get("room")).trim();
+      const nearby = String(form.get("nearby")).trim();
+      const location = [building, room, nearby ? "near " + nearby : ""].filter(Boolean).join(" · ");
+      if (!title || !building || !room) return;
+      reports.unshift({
+        id: Date.now(), title: title, category: form.get("category"), location: location,
+        building: building, room: room, nearby: nearby,
+        detail: String(form.get("details")).trim(), reporter: "You", time: "Just now", status: "New", reward: false
+      });
+      addPoints(3);
+      saveReports(); activeFilter = "All";
+      document.querySelectorAll(".filter").forEach(button => button.classList.toggle("active", button.dataset.filter === "All"));
+      renderReports(); updateStats(); event.currentTarget.reset();
+      document.getElementById("reportDialog").close();
+      showToast("Thanks for looking out for campus. You earned 3 weekly points.");
+    });
+    document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll(".filter").forEach(item => item.classList.toggle("active", item === button));
+      renderReports();
+    }));
+    document.getElementById("staffToggle").addEventListener("click", event => {
+      staffMode = !staffMode;
+      event.currentTarget.textContent = staffMode ? "Staff view on" : "Switch to staff view";
+      event.currentTarget.setAttribute("aria-pressed", String(staffMode));
+      document.getElementById("introText").textContent = staffMode ? "Review campus reports and update an issue when the fix is complete." : "Notice something that needs care? Let the right people know.";
+      renderReports();
+      showToast(staffMode ? "Staff demo view is on." : "Back to community view.");
+    });
+    document.getElementById("navReports").addEventListener("click", () => document.getElementById("reportsHeading").scrollIntoView({ behavior: "smooth" }));
+    document.getElementById("viewAll").addEventListener("click", () => { activeFilter = "All"; document.querySelector('[data-filter="All"]').click(); });
+    document.getElementById("navRewards").addEventListener("click", () => {
+      const earned = reports.filter(report => report.reward).length;
+      showToast(earned ? "You have " + earned + " demo coupon" + (earned === 1 ? "" : "s") + " earned on resolved reports." : "No coupons yet. A reward appears after a report is resolved.");
+    });
+    document.getElementById("navExchange").addEventListener("click", () => document.getElementById("exchangePanel").scrollIntoView({ behavior: "smooth" }));
+    document.getElementById("navLeaderboard").addEventListener("click", () => document.getElementById("leaderboardPanel").scrollIntoView({ behavior: "smooth" }));
+    document.getElementById("navMap").addEventListener("click", () => document.getElementById("mapPanel").scrollIntoView({ behavior: "smooth" }));
+    document.querySelectorAll(".map-building").forEach(building => {
+      building.addEventListener("click", () => selectBuilding(building.dataset.building));
+      building.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectBuilding(building.dataset.building);
+        }
+      });
+    });
+    document.getElementById("reportAtBuilding").addEventListener("click", () => openDialog(selectedBuilding));
+    const listingDialog = document.getElementById("listingDialog");
+    document.getElementById("openListing").addEventListener("click", () => { listingDialog.showModal(); document.getElementById("itemTitle").focus(); });
+    document.getElementById("closeListing").addEventListener("click", () => listingDialog.close());
+    document.getElementById("cancelListing").addEventListener("click", () => listingDialog.close());
+    listingDialog.addEventListener("click", event => { if (event.target === event.currentTarget) listingDialog.close(); });
+    document.getElementById("listingForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const title = String(form.get("title")).trim();
+      const price = String(form.get("price")).trim();
+      const meetup = String(form.get("meetup")).trim();
+      if (!title || !price || !meetup) return;
+      listings.unshift({
+        id: Date.now(), title: title, category: form.get("category"), price: price,
+        condition: form.get("condition"), meetup: meetup, details: String(form.get("details")).trim(),
+        seller: "You", interested: false
+      });
+      saveListings(); renderListings(); addPoints(2); event.currentTarget.reset(); listingDialog.close();
+      showToast("Your item is listed. You earned 2 weekly community points.");
+    });
+
+    renderReports();
+    renderListings();
+    renderLeaderboard();
+    selectBuilding(selectedBuilding);
+    updateStats();
+  </script>
+</body>
+</html>
